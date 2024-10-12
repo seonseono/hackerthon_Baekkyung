@@ -5,6 +5,7 @@ import altair as alt
 import plotly.express as px
 import matplotlib.pyplot as plt
 from PIL import Image
+import seaborn as sns
 
 st.set_page_config(
     page_title="Monthly Report",
@@ -44,7 +45,22 @@ df_data = log_load_data()
 col = st.columns((7,3), gap='medium')
 
 with col[0]:
-    st.markdown('#### Monthly Log')
+    df_log = df_selected_id[['year', 'month', 'date', 'day', 'time', 'type', 'alarm_cnt']]
+    df_log['type'] = df_log['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
+
+    st.markdown('#### Alarm Count by Date')
+    plt.figure(figsize=(20, 10))
+    plt.rc('font', size=30)
+    fig = plt.gcf()
+    
+    alarm_by_date = df_log.groupby('date')['alarm_cnt'].sum().reset_index()
+    st.bar_chart(alarm_by_date.set_index('date')['alarm_cnt'])
+
+    st.markdown('#### Alarm Count by Date')
+    alarm_by_date = df_log.groupby('date')['alarm_cnt'].sum().reset_index()
+    st.line_chart(alarm_by_date.set_index('date')['alarm_cnt'])
+
+    st.markdown('#### Monthly Log Record')
     df_abnormal = df_selected_id.loc[df_selected_id.abnormal ==1, ['year', 'month', 'date', 'day', 'time', 'type']]
     df_abnormal['type'] = df_abnormal['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
     df_abnormal.reset_index(drop=True, inplace=True)
