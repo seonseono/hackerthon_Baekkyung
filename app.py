@@ -3,6 +3,8 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import plotly.express as px
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
 st.set_page_config(
     page_title="Monthly Report",
@@ -15,7 +17,12 @@ st.title("🚗 Monthly Driver Report")
 st.markdown("")
 st.markdown("")
 
-df_data = pd.read_csv('data/data.csv')
+area_url = "https://raw.githubusercontent.com/seonseono/hackerthon_Baekkyung/refs/heads/main/data/data.csv"
+@st.cache
+def area_load_data():
+    df_data = pd.read_csv(area_url, encoding='UTF8')
+    return df_data
+df_data = area_load_data()
 
 with st.sidebar:
     st.title('✅ Driver ID')
@@ -24,39 +31,59 @@ with st.sidebar:
     
     selected_id = st.selectbox('Select an ID', id_list, index=len(id_list)-1)
     df_selected_id = df_data[df_data.id == selected_id]
-    df_selected_id_sorted = df_selected_id.sort_values(by="id", ascending=False)
-
-def make_heatmap(input_df, input_y, input_x, input_color, input_color_theme):
-    heatmap = alt.Chart(input_df).mark_rect().encode(
-            y=alt.Y(f'{input_y}:O', axis=alt.Axis(title="Month", titleFontSize=18, titlePadding=15, titleFontWeight=900, labelAngle=0)),
-            x=alt.X(f'{input_x}:O', axis=alt.Axis(title="", titleFontSize=18, titlePadding=15, titleFontWeight=900)),
-            color=alt.Color(f'max({input_color}):Q',
-                             legend=None,
-                             scale=alt.Scale(scheme=input_color_theme)),
-            stroke=alt.value('black'),
-            strokeWidth=alt.value(0.25),
-        ).properties(width=1200
-        ).configure_axis(
-        labelFontSize=12,
-        titleFontSize=12
-        ) 
-    # height=300
-    return heatmap
+    # df_selected_id_sorted = df_selected_id.sort_values(by="id", ascending=False)
 
 
-# Calculation abnormal behavior rate
-def calculate_abnormal_rate(input_df, input_id):
-  selected_id_data = input_df[input_df['id'] == input_id].reset_index()
-  previous_id_data = input_df[input_df['id'] == input_id - 1].reset_index()
-  selected_id_data['abnormal_rate'] = selected_id_data.abnormal.sub(previous_id_data.abnormal, fill_value=0)
-  return pd.concat([selected_id_data.states, selected_id_data.id, selected_id_data.abnormal, selected_id_data.abnormal_rate], axis=1).sort_values(by="abnormal_rate", ascending=False)
-
-#######################
-# Dashboard Main Panel
-col = st.columns((7, 3), gap='medium')
+col = st.columns((7,3), gap='medium')
 
 with col[0]:
-    st.markdown('#### Total Population')
-    
-    heatmap = make_heatmap(df_data, 'date', 'id', 'abnormal', 'input_color_theme')
-    st.altair_chart(heatmap, use_container_width=True)
+    st.markdown('#### Abnormal Behavior Log')
+    df_abnormal = df_selected_id.loc[df_selected_id.abnormal ==1, ['year', 'month', 'date', 'day', 'time', 'type']]
+    df_abnormal.reset_index(drop=True, inplace=True)
+    st.table(df_abnormal)
+
+with col[1]:
+    st.markdown('#### Driver Info')
+    df_info = df_selected_id[['id', 'driver_name', 'car_number', 'car_model']]
+    unique_drivers = df_info.groupby('id').first().reset_index()
+    unique_drivers = unique_drivers.drop(columns=['id'])
+    unique_drivers.columns = ['driver name', 'car number', 'car model']
+    st.table(unique_drivers)
+
+    st.markdown('#### Abnormal Rate')
+    df_rate = df_selected_id[['id', 'abnormal', 'type']]
+    df_rate['abnormal'] = df_rate['abnormal'].replace({0: 'normal', 1: 'abnormal'})
+    abn_cnt = df_rate['abnormal'].value_counts()
+    abn_rate = abn_cnt / abn_cnt.sum()*100
+    labels = abn_rate.index
+    sizes = abn_rate.values
+    wedgeprops={'width': 0.7, 'edgecolor': 'w', 'linewidth': 5}
+
+    plt.figure(figsize=(10, 10))
+    plt.rc('font', size=30)
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=260, counterclock=False, 
+            pctdistance=0.85, colors=['#50b498', '#ecdfcc'], wedgeprops=wedgeprops)
+    centre_circle = plt.Circle((0, 0), 0.5, fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+    plt.title("Abnormal Behavior Rate")
+    st.pyplot(fig)
+
+    st.markdown("")
+    st.markdown("")
+
+    df_rate['type'] = df_rate['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
+    abn_ty_cnt = df_rate[df_rate['type']!='normal'].value_counts()
+    abn_ty_rate = abn_ty_cnt / abn_ty_cnt.sum()*100
+    ty_labels = ['drowsy', 'phone', 'search']
+    ty_sizes = abn_ty_rate.values
+    wedgeprops={'width': 0.7, 'edgecolor': 'w', 'linewidth': 5}
+    plt.figure(figsize=(10, 10))
+    plt.rc('font', size=30)
+    plt.pie(ty_sizes, labels=ty_labels, autopct='%1.1f%%', startangle=260, counterclock=False, 
+            pctdistance=0.85, colors=['#72bf78', '#a0d683', '#def9c4'], wedgeprops=wedgeprops)
+    centre_circle = plt.Circle((0, 0), 0.5, fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+    plt.title("Abnormal Behavior Rate")
+    st.pyplot(fig)
