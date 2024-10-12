@@ -62,7 +62,7 @@ with col[1]:
     plt.figure(figsize=(10, 10))
     plt.rc('font', size=30)
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=260, counterclock=False, 
-            pctdistance=0.85, colors=['#50b498', '#ecdfcc'], wedgeprops=wedgeprops)
+            pctdistance=0.85, colors=['#798645', '#ecdfcc'], wedgeprops=wedgeprops)
     centre_circle = plt.Circle((0, 0), 0.5, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
