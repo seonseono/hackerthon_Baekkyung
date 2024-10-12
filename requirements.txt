@@ -1,0 +1,6 @@
+streamlit
+numpy
+pandas
+alter
+plotly
+koreanize_matplotlib
