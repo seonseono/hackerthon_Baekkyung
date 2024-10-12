@@ -52,7 +52,6 @@ with col[0]:
     plt.figure(figsize=(20, 10))
     plt.rc('font', size=30)
     fig = plt.gcf()
-    
     alarm_by_date = df_log.groupby('date')['alarm_cnt'].sum().reset_index()
     st.bar_chart(alarm_by_date.set_index('date')['alarm_cnt'])
 
