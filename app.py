@@ -4,7 +4,7 @@ import pandas as pd
 import altair as alt
 import plotly.express as px
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
+from PIL import Image
 
 st.set_page_config(
     page_title="Monthly Report",
@@ -45,6 +45,9 @@ with col[0]:
 with col[1]:
     st.markdown('#### Driver Info')
     st.markdown("")
+    img = Image.open('data/profile.png')
+    img = img.resize((250,250))
+    st.image(img, use_column_width=True)
     df_info = df_selected_id[['id', 'driver_name', 'car_number', 'car_model']]
     unique_drivers = df_info.groupby('id').first().reset_index()
     unique_drivers = unique_drivers.drop(columns=['id'])
