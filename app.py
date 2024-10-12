@@ -45,19 +45,24 @@ df_data = log_load_data()
 col = st.columns((7,3), gap='medium')
 
 with col[0]:
-    df_log = df_selected_id[['year', 'month', 'date', 'day', 'time', 'type', 'alarm_cnt']]
+    df_log = df_selected_id[['year', 'month', 'date', 'day', 'time', 'type', 'alarm_cnt', 'hour']]
     df_log['type'] = df_log['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
 
-    st.markdown('#### Alarm Count by Date')
-    plt.figure(figsize=(20, 10))
-    plt.rc('font', size=30)
-    fig = plt.gcf()
-    alarm_by_date = df_log.groupby('date')['alarm_cnt'].sum().reset_index()
-    st.bar_chart(alarm_by_date.set_index('date')['alarm_cnt'])
+    st.markdown('#### Alarm Count by Day')
+    alarm_by_day = df_log.groupby('day')['alarm_cnt'].sum().reset_index()
+    days_order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+    alarm_by_day['day'] = pd.Categorical(alarm_by_day['day'], categories=days_order, ordered=True)
+    alarm_by_day = alarm_by_day.sort_values(by='day')
+    st.bar_chart(alarm_by_day.set_index('day'))
 
-    st.markdown('#### Alarm Count by Date')
-    alarm_by_date = df_log.groupby('date')['alarm_cnt'].sum().reset_index()
-    st.line_chart(alarm_by_date.set_index('date')['alarm_cnt'])
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+
+    st.markdown('#### Alarm Count by Time')
+    alarm_by_time = df_log.groupby('hour')['alarm_cnt'].sum().reset_index()
+    st.line_chart(alarm_by_time, x='hour', y='alarm_cnt')
 
     st.markdown('#### Monthly Log Record')
     df_abnormal = df_selected_id.loc[df_selected_id.abnormal ==1, ['year', 'month', 'date', 'day', 'time', 'type']]
