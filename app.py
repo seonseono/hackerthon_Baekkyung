@@ -44,13 +44,14 @@ with col[0]:
 
 with col[1]:
     st.markdown('#### Driver Info')
+    st.markdown("")
     df_info = df_selected_id[['id', 'driver_name', 'car_number', 'car_model']]
     unique_drivers = df_info.groupby('id').first().reset_index()
     unique_drivers = unique_drivers.drop(columns=['id'])
     unique_drivers.columns = ['driver name', 'car number', 'car model']
     st.table(unique_drivers)
-
-    st.markdown('#### Abnormal Rate')
+    st.markdown("")
+    st.markdown('#### Monthly Record')
     df_rate = df_selected_id[['id', 'abnormal', 'type']]
     df_rate['abnormal'] = df_rate['abnormal'].replace({0: 'normal', 1: 'abnormal'})
     abn_cnt = df_rate['abnormal'].value_counts()
@@ -61,12 +62,12 @@ with col[1]:
 
     plt.figure(figsize=(10, 10))
     plt.rc('font', size=30)
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=260, counterclock=False, 
-            pctdistance=0.85, colors=['#798645', '#ecdfcc'], wedgeprops=wedgeprops)
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, counterclock=False, 
+            pctdistance=0.85, colors=['#e7eedd', '#90d26d'], wedgeprops=wedgeprops)
     centre_circle = plt.Circle((0, 0), 0.5, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
-    plt.title("Abnormal Behavior Rate")
+    plt.title("Abnormal Behavior Count")
     st.pyplot(fig)
 
     st.markdown("")
@@ -85,5 +86,5 @@ with col[1]:
     centre_circle = plt.Circle((0, 0), 0.5, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
-    plt.title("Abnormal Behavior Rate")
+    plt.title("Abnormal Behavior Type")
     st.pyplot(fig)
