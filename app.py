@@ -15,7 +15,7 @@ st.title("🚗 Monthly Driver Report")
 st.markdown("")
 st.markdown("")
 
-df_data = pd.read_csv('C:/Users/seono/hackerthon_Baekkyung/data.csv')
+df_data = pd.read_csv('data/data.csv')
 
 with st.sidebar:
     st.title('✅ Driver ID')
@@ -42,3 +42,21 @@ def make_heatmap(input_df, input_y, input_x, input_color, input_color_theme):
         ) 
     # height=300
     return heatmap
+
+
+# Calculation abnormal behavior rate
+def calculate_abnormal_rate(input_df, input_id):
+  selected_id_data = input_df[input_df['id'] == input_id].reset_index()
+  previous_id_data = input_df[input_df['id'] == input_id - 1].reset_index()
+  selected_id_data['abnormal_rate'] = selected_id_data.abnormal.sub(previous_id_data.abnormal, fill_value=0)
+  return pd.concat([selected_id_data.states, selected_id_data.id, selected_id_data.abnormal, selected_id_data.abnormal_rate], axis=1).sort_values(by="abnormal_rate", ascending=False)
+
+#######################
+# Dashboard Main Panel
+col = st.columns((7, 3), gap='medium')
+
+with col[0]:
+    st.markdown('#### Total Population')
+    
+    heatmap = make_heatmap(df_data, 'date', 'id', 'abnormal', 'input_color_theme')
+    st.altair_chart(heatmap, use_container_width=True)
