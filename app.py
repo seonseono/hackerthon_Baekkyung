@@ -44,16 +44,18 @@ with col[0]:
 
 with col[1]:
     st.markdown('#### Driver Info')
-    st.markdown("")
-    img = Image.open('data/profile.png')
-    img = img.resize((250,250))
+    img = Image.open('data/driver.jpg')
+    img = img.resize((600,600))
     st.image(img, use_column_width=True)
     df_info = df_selected_id[['id', 'driver_name', 'car_number', 'car_model']]
     unique_drivers = df_info.groupby('id').first().reset_index()
     unique_drivers = unique_drivers.drop(columns=['id'])
     unique_drivers.columns = ['driver name', 'car number', 'car model']
-    st.table(unique_drivers)
+    unique_drivers = unique_drivers.T
+    unique_drivers.columns = ['driver info']
+    st.dataframe(unique_drivers, use_container_width=True)
     st.markdown("")
+
     st.markdown('#### Monthly Record')
     df_rate = df_selected_id[['id', 'abnormal', 'type']]
     df_rate['abnormal'] = df_rate['abnormal'].replace({0: 'normal', 1: 'abnormal'})
