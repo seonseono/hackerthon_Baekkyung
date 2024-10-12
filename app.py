@@ -17,12 +17,12 @@ st.title("🚗 Monthly Driver Report")
 st.markdown("")
 st.markdown("")
 
-area_url = "https://raw.githubusercontent.com/seonseono/hackerthon_Baekkyung/refs/heads/main/data/data.csv"
+total_url = "https://raw.githubusercontent.com/seonseono/hackerthon_Baekkyung/refs/heads/main/data/data.csv"
 @st.cache
-def area_load_data():
-    df_data = pd.read_csv(area_url, encoding='UTF8')
+def total_load_data():
+    df_data = pd.read_csv(total_url, encoding='UTF8')
     return df_data
-df_data = area_load_data()
+df_data = total_load_data()
 
 with st.sidebar:
     st.title('✅ Driver ID')
@@ -33,14 +33,22 @@ with st.sidebar:
     df_selected_id = df_data[df_data.id == selected_id]
     # df_selected_id_sorted = df_selected_id.sort_values(by="id", ascending=False)
 
+log_url = "https://raw.githubusercontent.com/seonseono/hackerthon_Baekkyung/refs/heads/main/data/id1_log.csv"
+@st.cache
+def log_load_data():
+    df_data = pd.read_csv(log_url, encoding='UTF8')
+    return df_data
+df_data = log_load_data()
+
 
 col = st.columns((7,3), gap='medium')
 
 with col[0]:
-    st.markdown('#### Abnormal Behavior Log')
+    st.markdown('#### Monthly Log')
     df_abnormal = df_selected_id.loc[df_selected_id.abnormal ==1, ['year', 'month', 'date', 'day', 'time', 'type']]
+    df_abnormal['type'] = df_abnormal['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
     df_abnormal.reset_index(drop=True, inplace=True)
-    st.table(df_abnormal)
+    st.dataframe(df_abnormal, use_container_width=True)
 
 with col[1]:
     st.markdown('#### Driver Info')
