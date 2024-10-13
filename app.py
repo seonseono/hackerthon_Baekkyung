@@ -41,14 +41,27 @@ def log_load_data():
     return df_data
 df_data = log_load_data()
 
-
 col = st.columns((7,3), gap='medium')
 
 with col[0]:
     df_log = df_selected_id[['year', 'month', 'date', 'day', 'time', 'type', 'alarm_cnt', 'hour']]
     df_log['type'] = df_log['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
 
-    st.markdown('#### Alarm Count by Day')
+    st.markdown('#### Record During Drive')
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    alarm_by_time = df_log.groupby('hour')['alarm_cnt'].sum().reset_index()
+    alarm_by_time.rename(columns={'hour':'Time Line', 'alarm_cnt':'Alarm Counts'}, inplace=True)
+    st.line_chart(alarm_by_time, x='Time Line', y='Alarm Counts')
+    
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    
+    st.markdown('#### Weekly Alarm Report')
+    st.markdown("")
+    st.markdown("")
     alarm_by_day = df_log.groupby('day')['alarm_cnt'].sum().reset_index()
     days_order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     alarm_by_day['day'] = pd.Categorical(alarm_by_day['day'], categories=days_order, ordered=True)
@@ -56,15 +69,9 @@ with col[0]:
     st.bar_chart(alarm_by_day.set_index('day'))
 
     st.markdown("")
-    st.markdown("")
-    st.markdown("")
-    st.markdown("")
 
-    st.markdown('#### Alarm Count by Time')
-    alarm_by_time = df_log.groupby('hour')['alarm_cnt'].sum().reset_index()
-    st.line_chart(alarm_by_time, x='hour', y='alarm_cnt')
-
-    st.markdown('#### Monthly Log Record')
+    st.markdown('#### Abnormal Detect Log')
+    st.markdown("")
     df_abnormal = df_selected_id.loc[df_selected_id.abnormal ==1, ['year', 'month', 'date', 'day', 'time', 'type']]
     df_abnormal['type'] = df_abnormal['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})
     df_abnormal.reset_index(drop=True, inplace=True)
@@ -85,6 +92,8 @@ with col[1]:
     st.markdown("")
 
     st.markdown('#### Monthly Record')
+    st.markdown("")
+    st.markdown("")
     df_rate = df_selected_id[['id', 'abnormal', 'type']]
     df_rate['abnormal'] = df_rate['abnormal'].replace({0: 'normal', 1: 'abnormal'})
     abn_cnt = df_rate['abnormal'].value_counts()
@@ -96,7 +105,7 @@ with col[1]:
     plt.figure(figsize=(10, 10))
     plt.rc('font', size=30)
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, counterclock=False, 
-            pctdistance=0.85, colors=['#e7eedd', '#90d26d'], wedgeprops=wedgeprops)
+            pctdistance=0.85, colors=['#ecefec', '#3fa7d6'], wedgeprops=wedgeprops)
     centre_circle = plt.Circle((0, 0), 0.5, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
@@ -115,7 +124,7 @@ with col[1]:
     plt.figure(figsize=(10, 10))
     plt.rc('font', size=30)
     plt.pie(ty_sizes, labels=ty_labels, autopct='%1.1f%%', startangle=260, counterclock=False, 
-            pctdistance=0.85, colors=['#72bf78', '#a0d683', '#def9c4'], wedgeprops=wedgeprops)
+            pctdistance=0.85, colors=['#7895e3', '#60c8da', '#90e0ef'], wedgeprops=wedgeprops)
     centre_circle = plt.Circle((0, 0), 0.5, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
