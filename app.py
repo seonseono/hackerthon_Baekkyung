@@ -70,7 +70,7 @@ with col[0]:
 
     st.markdown("")
 
-    st.markdown('#### Abnormal Detect Log')
+    st.markdown('#### Abnormal Log')
     st.markdown("")
     df_abnormal = df_selected_id.loc[df_selected_id.abnormal ==1, ['year', 'month', 'date', 'day', 'time', 'type']]
     df_abnormal['type'] = df_abnormal['type'].replace({0:'normal', 1:'drowsy', 2:'phone', 3:'search'})

@@ -3,10 +3,10 @@
 <br/>
 
 ## Streamlit 서버의 WebApp Demo</span>
-다음 링크 [Monthly Dashboard](https://montly-dashboard-hackerthon-baekkyung.streamlit.app/) 에서 등록된 운전자들의 Monthly Report를 확인할 수 있습니다. 
+다음 링크 [Monthly Dashboard](https://monthly-dashboard-hackerthon-baekkyung.streamlit.app/) 에서 등록된 운전자들의 Monthly Report를 확인할 수 있습니다. 
 <br/>
-<img src="https://github.com/seonseono/Abnormal_Driver_Detection_YOLOv8_Streamlit/blob/main/webapp_image.jpg">
+<img src="hackerthon_Baekkyung/blob/main/data/1.jpg">
+<img src="hackerthon_Baekkyung/blob/main/data/2.jpg">
 
 <br/>
 
-https://montly-dashboard-hackerthon-baekkyung.streamlit.app/
